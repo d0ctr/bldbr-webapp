@@ -41,7 +41,7 @@ export default function Home() {
   }
 
   useEffect(() => {
-    if (results == null || !results.length) {
+    if (results == null) {
       hapticError();
       setFailed(true);
       setTimeout(() => {

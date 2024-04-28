@@ -31,6 +31,8 @@ export const getResults = async (formData: FormData, page_size = 10, page = 1): 
                     text: getTextFromGameDetail(game),
                     image_url: game.background_image,
                 }))
+        ).then(games => 
+            games.length == 0 ? null : games
         ).catch(err => {
             console.log(`Error getting games: ${err.toString()}`)
             return null;
