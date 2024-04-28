@@ -11,16 +11,17 @@
   "dependencies": {
     "@nextui-org/react": "^2.3.6",
     "@primer/octicons-react": "^19.9.0",
+    "dotenv": "^16.4.5",
     "framer-motion": "^11.1.7",
     "next": "14.2.3",
     "react": "^18",
-    "dotenv": "^16.4.5",
     "react-dom": "^18"
   },
   "devDependencies": {
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
+    "@types/telegram-web-app": "^7.2.1",
     "eslint": "^8",
     "eslint-config-next": "14.2.3",
     "postcss": "^8",
