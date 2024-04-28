@@ -60,7 +60,7 @@ export default function Home() {
   
       setDark(tg.WebApp.colorScheme == 'dark');
     }
-  });
+  }, []);
 
 
   return (
