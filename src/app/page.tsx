@@ -1,23 +1,39 @@
-import { PaperAirplaneIcon } from '@primer/octicons-react';
-import { useFormState } from 'react-dom';
+"use client"
+import { getResults } from '@/api/getGames';
+import ResultCard from '@/components/ResultCard';
+import PaperPlane from '@/icons/PaperPlane';
+import GameCards from '@/test-values/game-cards.json';
+import { Divider } from '@nextui-org/react';
+import { useState } from 'react';
+
+const categories = [
+  { value: 'game', label: '🎮'},
+  { value: 'genius', label: '🎵'},
+  { value: 'get', label: '🔗'},
+];
 
 export default function Home() {
-  async function getResults(formData: FormData) {
-    "use server"
-    console.log(formData.get('query'))
-    console.log(formData.get('category'))
+  const [results, setResults] = useState<{slug: string, image_url?: string, title: string, text: string}[]>([]);
+  const handleForm = async (formData: FormData) => {
+    if (formData.get('category') === 'game') {
+      const result = await getResults(formData);
+      setResults(result);
+    }
   }
+
   return (
-    <main className='flex min-h-screen flex-col items-stretch justify-between pt-5'>
-      <form className='flex flex-row mx-4 gap-2 h-12' action={getResults}>
-        <select className=' bg-white px-2 rounded-md outline outline-2 outline-offset-1 outline-transparent hover:outline-blue-500 text-lg' style={{appearance: 'none'}} name='category'>
-          <option value='game'>🎮</option>
-          <option value='genius'>🎵</option>
-          <option value='get'>🔗</option>
+    <main className='dark flex min-h-screen flex-col justify-start gap-4 pb-4'>
+      <form className='flex flex-row mx-2 gap-2 h-12 mt-5' action={handleForm}>
+        <select className='flex-none px-3 rounded-md outline outline-2 outline-offset-1 outline-transparent hover:outline-blue-500 bg-default hover:bg-default-100' style={{appearance: 'none'}} name='category'>
+            {
+              categories.map((cat) => <option key={cat.value} value={cat.value}>{cat.label}</option>)
+            }
         </select>
-        <input className='flex-1 px-2 outline outline-2 outline-offset-1 outline-transparent hover:outline-blue-500 rounded-md text-black' type='text' name='query' style={{appearance: 'none'}}/>
-        <button className='flex-none text-black bg-white px-2 pb-0.5 outline outline-2 outline-offset-1 outline-transparent hover:outline-blue-500 rounded-md' type='submit'><PaperAirplaneIcon ></PaperAirplaneIcon></button>
+        <input className='flex-1 px-2 outline outline-2 outline-offset-1 outline-transparent hover:outline-blue-500 rounded-md bg-default hover:bg-default-100' type='text' name='query' style={{appearance: 'none'}} required/>
+        <button className='flex-none px-2 outline outline-2 outline-offset-1 outline-transparent hover:outline-blue-500 hover:text-blue-500 bg-default text-black rounded-md hover:bg-default-100' aria-label='Choose category'><PaperPlane size={36}/></button>
       </form>
+      <Divider/>
+      {!results.length ? '' : results.map(game => <ResultCard key={game.slug} {...game} callback={`game:${game.slug}`}/>)}
     </main>
   );
 }

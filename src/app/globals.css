@@ -25,6 +25,14 @@ body {
     )
     rgb(var(--background-start-rgb));
 }
+form {
+  input {
+    font-size: large;
+  }
+  select, option {
+    font-size: x-large;
+  }
+}
 
 @layer utilities {
   .text-balance {
