@@ -20,11 +20,6 @@ body {
   color: hsl(var(--nextui-foreground));
   background-color: hsl(var(--nextui-background));
 }
-form {
-  input {
-    font-size: large;
-  }
-}
 
 @layer utilities {
   .text-balance {

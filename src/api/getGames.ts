@@ -16,6 +16,8 @@ export const getResults = async (formData: FormData, page_size = 10, page = 1): 
 
     await new Promise(resolve => setTimeout(()=>resolve(null), 2000))
 
+    return null;
+
     return await fetch(
         `https://api.rawg.io/api/games?` +
             new URLSearchParams({
@@ -33,7 +35,10 @@ export const getResults = async (formData: FormData, page_size = 10, page = 1): 
                     text: getTextFromGameDetail(game),
                     image_url: game.background_image,
                 }))
-        );
+        ).catch(err => {
+            console.log(`Error getting games: ${err.toString()}`)
+            return null;
+        });
 };
 
 const getTextFromGameDetail = (game: any) => {
