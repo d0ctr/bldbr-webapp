@@ -9,8 +9,15 @@ const nextConfig = {
     },
     experimental: {
         serverActions: {
-            allowedOrigins: [
+            allowedForwardedHosts: [
+                'glorious-lamp-6rvw4r59r563rjw9-3000.app.github.dev',
                 '*.app.github.dev',
+                'localhost:3000',
+            ],
+            allowedOrigins: [
+                'glorious-lamp-6rvw4r59r563rjw9-3000.app.github.dev',
+                '*.app.github.dev',
+                'localhost:3000',
             ],
             
         }
