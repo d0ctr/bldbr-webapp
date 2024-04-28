@@ -3,7 +3,11 @@
 export default function getTelegram() {
     if ('Telegram' in globalThis.window) {
         const tg = globalThis.window.Telegram as Telegram;
-        if (!tg.WebApp.initData) return null;
+        alert('Telegram unavailable')
+        if (!tg.WebApp.initData) {
+            alert('No telegram init data')
+            return null;
+        }
 
         return tg;
     }
