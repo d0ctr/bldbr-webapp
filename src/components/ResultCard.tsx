@@ -8,13 +8,13 @@ export default function ResultCard({ title, image_url, text, callback }: Game & 
     }
 
     return (
-        <Card className='flex flex-col justify-center mx-2 hover:shadow-lg'>
+        <Card className='flex flex-col justify-center hover:shadow-lg w-full max-w-lg'>
             {image_url
                 ?
                 <CardHeader className='flex-col'>
-                    <Image radius='md' src={image_url} alt={title} width={500} height={500} className='z-0 select-none'/>
+                    <Image radius='md' src={image_url} alt={title} width={500} height={200} className='z-0 select-none object-cover'/>
                     <div className='z-10 flex flex-col justify-end w-full max-w-[500px] bg-gradient-to-t from-black to-transparent text-center -mt-36 h-36 rounded-md'>
-                        <div className='pb-4 px-2 font-bold'>{title}</div>
+                        <div className='pb-4 px-2 font-bold text-white'>{title}</div>
                     </div>
                 </CardHeader>
                 :

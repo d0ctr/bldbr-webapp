@@ -14,6 +14,8 @@ export const getResults = async (formData: FormData, page_size = 10, page = 1): 
         return null
     }
 
+    await new Promise(resolve => setTimeout(()=>resolve(null), 2000))
+
     return await fetch(
         `https://api.rawg.io/api/games?` +
             new URLSearchParams({
