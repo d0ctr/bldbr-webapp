@@ -1,8 +1,8 @@
 "use client"
 
 export default function getTelegram() {
-    if ('Telegram' in globalThis.window) {
-        const tg = globalThis.window.Telegram as Telegram;
+    if (window && 'Telegram' in window) {
+        const tg = window.Telegram as Telegram;
         alert('Telegram unavailable')
         if (!tg.WebApp.initData) {
             alert('No telegram init data')
