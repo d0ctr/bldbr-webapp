@@ -34,7 +34,7 @@ export const getResults = async (formData: FormData, page_size = 10, page = 1): 
         );
 };
 
-const getTextFromGameDetail = (game) => {
+const getTextFromGameDetail = (game: any) => {
     return (
         (game.released
             ? `Дата релиза: ${new Date(game.released).toLocaleDateString(
@@ -44,19 +44,19 @@ const getTextFromGameDetail = (game) => {
         (game.metacritic ? `Metacritic: ${game.metacritic}\n` : '') +
         (game.platforms?.length
             ? `Платформы: ${game.platforms
-                  .filter((v) => v.platform?.name)
-                  .map((v) => v?.platform.name)
+                  .filter((v: any) => v.platform?.name)
+                  .map((v: any) => v?.platform.name)
                   .join(', ')}\n`
             : '') +
         (game.stores?.length
             ? `Магазины: ${game.stores
-                  .filter((v) => v?.store?.name)
-                  .map((v) => v.store.name)
+                  .filter((v: any) => v?.store?.name)
+                  .map((v: any) => v.store.name)
                   .join(', ')}\n`
             : '') +
         (game.hltb?.playtimes?.length
             ? `<a href='${game.hltb?.url}'>HLTB</a>:\n${game.hltb.playtimes
-                  .map(({ name, value }) => `\t${name}: ${value}`)
+                  .map(({ name, value }: {name: string, value: number}) => `\t${name}: ${value}`)
                   .join('\n')}`
             : '')
     );
