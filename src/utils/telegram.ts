@@ -14,6 +14,21 @@ export default function getTelegram() {
     return null;
 }
 
+export async function getAsyncTelegram(): Promise<Telegram> {
+    const tg = getTelegram();
+    if (tg != null) return tg;
+
+    return new Promise(resolve => {
+        const interval = setInterval(() => {
+            const tg = getTelegram();
+            if (tg != null) {
+                clearInterval(interval);
+                resolve(tg);
+            }
+        }, 100);
+    })
+}
+
 export function hapticError() {
     const tg = getTelegram();
     if (tg == null) return;
