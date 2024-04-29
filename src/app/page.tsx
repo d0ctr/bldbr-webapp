@@ -64,10 +64,10 @@ export default function Home() {
 
 
   return (
-    <main className={(isDark ? 'dark ' : 'dark ') + 'flex flex-row justify-center min-h-screen min-w-80 bg-background text-foregound'}>
+    <main className={(isDark ? 'dark' : 'dark') + ' flex flex-row justify-center min-h-screen min-w-80 bg-background text-foregound'}>
       <div className='flex flex-col justify-start items-center gap-4 max-w-lg py-4'>
         <form className='flex flex-row gap-2 h-12 px-2 min-w-full' action={handleForm}>
-          <Select className='flex-none w-12' radius='sm' classNames={{mainWrapper: 'h-full w-fit', selectorIcon: 'hidden', trigger: 'h-full', innerWrapper: 'w-full h-full', value: 'text-center text-2xl'}} selectorIcon={<></>} selectedKeys={['game']} aria-label='Category'>
+          <Select className='flex-none w-12' radius='sm' classNames={{mainWrapper: 'h-full w-fit', selectorIcon: 'hidden', trigger: 'h-full', innerWrapper: 'w-full h-full', value: 'text-center text-2xl'}} popoverProps={{classNames: { base: 'text-2xl w-fit'}}} selectorIcon={<></>} selectedKeys={['game']} aria-label='Category'>
             { categories.map(cat => (
               <SelectItem key={cat.value} value={cat.value}>{cat.label}</SelectItem>
             )) }
