@@ -10,3 +10,9 @@ export type ResultData = {
     details: object,
     type: Category,
 }
+
+export type CategoryConfig = {
+  value: Category;
+  label: JSX.Element;
+  active: boolean;
+}

@@ -13,14 +13,11 @@ import type { Game } from '@/api/getGames';
 import { useFormStatus } from 'react-dom';
 import getTelegram, { hapticError } from '@/utils/telegram';
 import * as Icons from '@/icons';
-import { Category } from '@/utils/shared';
+import { Category, CategoryConfig } from '@/utils/shared';
 
-const categories: {
-  value: Category;
-  label: JSX.Element;
-}[] = [
-  { value: Category.Game, label: <Icons.Game size={32} /> },
-  { value: Category.Song, label: <Icons.Song size={32} /> },
+const categories: CategoryConfig[] = [
+  { value: Category.Game, label: <Icons.Game size={32} />, active: true },
+  { value: Category.Song, label: <Icons.Song size={32} />, active: false },
   // { value: 'get', label: '🔗'},
   // { value: 'llm', label: '🤖'},
 ];
@@ -98,7 +95,7 @@ export default function Home() {
           action={handleForm}
         >
           <Select
-            items={categories}
+            items={categories.filter((c) => c.active)}
             name='category'
             className='flex-none w-12 text-foreground hover:text-blue-500'
             radius='sm'
@@ -121,7 +118,7 @@ export default function Home() {
             isRequired
             disallowEmptySelection
             aria-label='Category'
-            renderValue={(items: SelectedItems<(typeof categories)[number]>) =>
+            renderValue={(items: SelectedItems<CategoryConfig>) =>
               items.map((item) => (
                 <div key={item.key} className='flex justify-center'>
                   {item.data?.label}

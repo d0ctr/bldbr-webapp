@@ -1,5 +1,4 @@
-'use server';
-
+'use server'
 import { Category, ResultData } from '@/utils/shared';
 import { HowLongToBeatService } from 'howlongtobeat';
 
