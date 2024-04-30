@@ -1,68 +1,104 @@
-'use server';
+'use server'
+import { Category, ResultData } from '@/utils/shared';
+import { HowLongToBeatService } from 'howlongtobeat';
+
+const hltb = new HowLongToBeatService();
+
 require('dotenv').config();
 
-export declare type Game = {slug: string, image_url?: string, title: string, text: string};
+export interface Game extends ResultData {
+  slug: string;
+  image_url?: string;
+  title: string;
+  details: {
+    released?: string;
+    metacritic?: string;
+    stores?: { name: string }[];
+    platforms?: { name: string }[];
+    hltb?: {
+      url: string;
+      playtimes: { name: string; value: number | string }[];
+    };
+  };
+  type: Category.Game;
+}
 
-export const getResults = async (formData: FormData, page_size = 10, page = 1): Promise<Game[] | null> => {
-    'use server';
-    if (typeof process.env.RAWG_TOKEN !== 'string' || !process.env.RAWG_TOKEN) {
-        return null;
-    }
+export const getResults = async (
+  formData: FormData,
+  page_size = 10,
+  page = 1
+): Promise<Game[] | null> => {
+  'use server';
+  if (typeof process.env.RAWG_TOKEN !== 'string' || !process.env.RAWG_TOKEN) {
+    return null;
+  }
 
-    const game = formData.get('query');
-    if (typeof game !== 'string' || !game) {
-        return null
-    }
+  const game = formData.get('query');
+  if (typeof game !== 'string' || !game) {
+    return null;
+  }
 
-    return await fetch(
-        `https://api.rawg.io/api/games?` +
-            new URLSearchParams({
-                key: process.env.RAWG_TOKEN,
-                search: game,
-                page_size: `${page_size}`,
-                page: `${page}`
-            })
+  return await fetch(
+    `https://api.rawg.io/api/games?` +
+      new URLSearchParams({
+        key: process.env.RAWG_TOKEN,
+        search: game,
+        page_size: `${page_size}`,
+        page: `${page}`,
+      })
+  )
+    .then((res) => res.json())
+    .then((res) =>
+      Promise.all(
+        res.results.map(async (game: any) => {
+          const { name, released } = game;
+          if (!released) return game;
+
+          const year = new Date(released).getFullYear();
+          if (!year) return game;
+
+          const hltbResult = await hltb
+            .searchWithOptions(name, { year })
+            .then((res) => (res.length > 0 ? res[0] : null))
+            .catch(() => null);
+          if (!hltbResult) return game;
+
+          game.hltb = {
+            url: `https://howlongtobeat.com/game/${hltbResult.id}`,
+            playtimes: hltbResult.timeLabels
+              .map(([key, name]) => ({
+                name,
+                value: Number.isSafeInteger(hltbResult[key])
+                  ? hltbResult[key]
+                  : `${Math.floor(hltbResult[key])}½`,
+              }))
+              .filter(({ value }) => value != 0),
+          };
+          return game;
+        })
+      )
     )
-        .then((res) => res.json())
-        .then((res) =>
-                res.results.map((game: any) => ({
-                    slug: game.slug,
-                    title: game.name,
-                    text: getTextFromGameDetail(game),
-                    image_url: game.background_image,
-                }))
-        ).then(games => 
-            games.length == 0 ? null : games
-        ).catch(err => {
-            console.log(`Error getting games: ${err.toString()}`)
-            return null;
-        });
-};
-
-const getTextFromGameDetail = (game: any) => {
-    return (
-        (game.released
-            ? `Дата релиза: ${new Date(game.released).toLocaleDateString(
-                  'de-DE'
-              )}\n`
-            : '') +
-        (game.metacritic ? `Metacritic: ${game.metacritic}\n` : '') +
-        (game.platforms?.length
-            ? `Платформы: ${game.platforms
-                  .filter((v: any) => v.platform?.name)
-                  .map((v: any) => v?.platform.name)
-                  .join(', ')}\n`
-            : '') +
-        (game.stores?.length
-            ? `Магазины: ${game.stores
-                  .filter((v: any) => v?.store?.name)
-                  .map((v: any) => v.store.name)
-                  .join(', ')}\n`
-            : '') +
-        (game.hltb?.playtimes?.length
-            ? `<a href='${game.hltb?.url}'>HLTB</a>:\n${game.hltb.playtimes
-                  .map(({ name, value }: {name: string, value: number}) => `\t${name}: ${value}`)
-                  .join('\n')}`
-            : '')
-    );
+    .then((games) =>
+      games.map(
+        (game: any) =>
+          ({
+            slug: game.slug,
+            title: game.name,
+            details: {
+              released: game.released,
+              metacritic: game.metacritic,
+              platforms: game.platforms?.map((v: any) => v.platform),
+              stores: game.stores?.map((v: any) => v.store),
+              hltb: game.hltb,
+            },
+            image_url: game.background_image,
+            type: Category.Game,
+          } as Game)
+      )
+    )
+    .then((games) => (games.length == 0 ? null : games))
+    .catch((err) => {
+      console.log(`Error getting games: ${err.toString()}`);
+      return null;
+    });
 };
