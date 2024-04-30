@@ -9,13 +9,16 @@ import {
   Divider,
   Image,
 } from '@nextui-org/react';
+import GameDetails from './GameDetails';
+import { Category, ResultData } from '@/utils/shared';
 
 export default function ResultCard({
   title,
   image_url,
-  text,
+  details,
+  type,
   callback,
-}: Game & { callback: string }) {
+}: ResultData & { callback?: string }) {
   async function processRedirect(formData: FormData) {
     const callback = formData.get('callback');
     switchInlineQuery(`/c ${callback}`, [
@@ -52,7 +55,7 @@ export default function ResultCard({
         </CardHeader>
       )}
       <CardBody>
-        <p className='whitespace-pre-wrap'>{text}</p>
+        {type === Category.Game && <GameDetails details={details} />}
       </CardBody>
       {getTelegram() != null && (
         <CardFooter className='pt-0 overflow-visible'>

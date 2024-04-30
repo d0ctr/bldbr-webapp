@@ -13,10 +13,14 @@ import type { Game } from '@/api/getGames';
 import { useFormStatus } from 'react-dom';
 import getTelegram, { hapticError } from '@/utils/telegram';
 import * as Icons from '@/icons';
+import { Category } from '@/utils/shared';
 
-const categories = [
-  { value: 'game', label: <Icons.Game size={32} /> },
-  { value: 'song', label: <Icons.Song size={32} />},
+const categories: {
+  value: Category;
+  label: JSX.Element;
+}[] = [
+  { value: Category.Game, label: <Icons.Game size={32} /> },
+  { value: Category.Song, label: <Icons.Song size={32} /> },
   // { value: 'get', label: '🔗'},
   // { value: 'llm', label: '🤖'},
 ];
@@ -48,14 +52,14 @@ const SubmitData = ({
 export default function Home() {
   const [results, setResults] = useState<Game[] | null>([]);
   const [hasFailed, setFailed] = useState<boolean>(false);
-  const [category, setCategory] = useState<'game' | 'genius' | 'get' | null>();
+  const [category, setCategory] = useState<Category>(Category.Game);
   const [isDark, setDark] = useState<boolean>(false);
 
   const handleForm = async (formData: FormData) => {
-    if (formData.get('category') === 'game') {
+    if (formData.get('category') === Category.Game) {
       const games = await getResults(formData);
       setResults(games);
-      setCategory('game');
+      setCategory(Category.Game);
     }
   };
 
@@ -113,7 +117,7 @@ export default function Home() {
               classNames: { base: 'w-fit', content: 'px-1' },
             }}
             selectorIcon={<></>}
-            defaultSelectedKeys={["game"]}
+            defaultSelectedKeys={['game']}
             isRequired
             disallowEmptySelection
             aria-label='Category'
@@ -136,10 +140,9 @@ export default function Home() {
             )}
           </Select>
           <input
-            className='flex-1 px-2 min-w-0 w-full h-full rounded-md text-large outline outline-2 outline-offset-1 outline-transparent hover:outline-blue-500 bg-default hover:bg-default-100 text-foreground'
+            className='flex-1 px-2 min-w-0 w-full h-full rounded-md text-large outline outline-2 outline-offset-1 outline-transparent hover:outline-blue-500 bg-default hover:bg-default-100 appearance-none'
             type='text'
             name='query'
-            style={{ appearance: 'none' }}
             required
           />
           <SubmitData
@@ -155,6 +158,7 @@ export default function Home() {
                 <ResultCard
                   key={result.slug}
                   {...result}
+                  type={category}
                   callback={`${category}:${result.slug}`}
                 />
               ))}

@@ -1,7 +1,3 @@
 {
-  "plugins": [
-    "@stylistic"
-  ],
-  "extends": "next/core-web-vitals",
-  "@stylistic/quotes": ["error", "single", { "allowTemplateLiterals": true }]
+  "extends": "next/core-web-vitals"
 }
