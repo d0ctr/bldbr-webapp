@@ -33,9 +33,9 @@ export default function GameDetails({
       )}
       {hltb?.playtimes?.length && (
         <div>
-          <a href={hltb.url} target={'_blank'}>HLTB</a>:<br />
+          <a className='underline text-blue-600 visited:text-blue-800' href={hltb.url} target={'_blank'}><b>HLTB</b></a>:<br />
           {hltb.playtimes.map(({ name, value }, i) => (
-            <div className='indent-4'>
+            <div key={i} className='indent-4'>
               {name}: {value}
               <br />
             </div>
