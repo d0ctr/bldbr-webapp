@@ -95,6 +95,7 @@ export default function Home() {
         >
           <Select
             items={categories}
+            name='category'
             className='flex-none w-12 text-foreground hover:text-blue-500'
             radius='sm'
             selectionMode='single'
