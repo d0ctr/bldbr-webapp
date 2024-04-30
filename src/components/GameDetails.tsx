@@ -8,39 +8,39 @@ export default function GameDetails({
   return (
     <>
       {released && (
-        <>
+        <div>
           <b>Дата релиза</b>: {new Date(released).toLocaleDateString('de-DE')}
           <br />
-        </>
+        </div>
       )}
       {metacritic && (
-        <>
+        <div>
           <b>Metacritic</b>: {metacritic}
           <br />
-        </>
+        </div>
       )}
       {platforms?.length && (
-        <>
+        <div>
           <b>Платформы</b>: {platforms.map((p) => p.name).join(', ')}
           <br />
-        </>
+        </div>
       )}
       {stores?.length && (
-        <span>
+        <div>
           <b>Магазины</b>: {stores.map((p) => p.name).join(', ')}
           <br />
-        </span>
+        </div>
       )}
       {hltb?.playtimes?.length && (
-        <>
-          <a href={hltb.url} target={'_blank'}>HLTB:</a>
+        <div>
+          <a href={hltb.url} target={'_blank'}>HLTB</a>:<br />
           {hltb.playtimes.map(({ name, value }, i) => (
-            <span key={i} className='indent-4'>
+            <div className='indent-4'>
               {name}: {value}
               <br />
-            </span>
+            </div>
           ))}
-        </>
+        </div>
       )}
     </>
   );
