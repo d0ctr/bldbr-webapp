@@ -1,4 +1,5 @@
 import { Game } from '@/api/getGames';
+import Link from './Link';
 
 export default function GameDetails({
   details: { released, platforms, metacritic, hltb, stores },
@@ -33,7 +34,10 @@ export default function GameDetails({
       )}
       {hltb?.playtimes?.length && (
         <div>
-          <a className='underline text-blue-600 visited:text-blue-800' href={hltb.url} target={'_blank'}><b>HLTB</b></a>:<br />
+          <Link href={hltb.url}>
+            <b>HLTB</b>
+          </Link>
+          :<br />
           {hltb.playtimes.map(({ name, value }, i) => (
             <div key={i} className='indent-4'>
               {name}: {value}

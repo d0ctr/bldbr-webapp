@@ -1,4 +1,4 @@
-'use server'
+'use server';
 import { Category, ResultData } from '@/utils/shared';
 import { HowLongToBeatService } from 'howlongtobeat';
 
@@ -23,18 +23,12 @@ export interface Game extends ResultData {
   type: Category.Game;
 }
 
-export const getResults = async (
-  formData: FormData,
+export const getGames = async (
+  query: string,
   page_size = 10,
   page = 1
 ): Promise<Game[] | null> => {
-  'use server';
   if (typeof process.env.RAWG_TOKEN !== 'string' || !process.env.RAWG_TOKEN) {
-    return null;
-  }
-
-  const game = formData.get('query');
-  if (typeof game !== 'string' || !game) {
     return null;
   }
 
@@ -42,11 +36,12 @@ export const getResults = async (
     `https://api.rawg.io/api/games?` +
       new URLSearchParams({
         key: process.env.RAWG_TOKEN,
-        search: game,
+        search: query,
         page_size: `${page_size}`,
         page: `${page}`,
       })
   )
+    .then((res) => (!res.ok ? Promise.reject('non-200 response') : res))
     .then((res) => res.json())
     .then((res) =>
       Promise.all(
@@ -98,7 +93,7 @@ export const getResults = async (
     )
     .then((games) => (games.length == 0 ? null : games))
     .catch((err) => {
-      console.log(`Error getting games: ${err.toString()}`);
+      console.error(`Error getting games: ${err.toString()}`);
       return null;
     });
 };

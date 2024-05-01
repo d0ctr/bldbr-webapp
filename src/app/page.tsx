@@ -1,5 +1,5 @@
 'use client';
-import { getResults } from '@/api/getGames';
+import { getGames } from '@/api/getGames';
 import ResultCard from '@/components/ResultCard';
 import {
   Button,
@@ -9,15 +9,15 @@ import {
   SelectedItems,
 } from '@nextui-org/react';
 import { useEffect, useState } from 'react';
-import type { Game } from '@/api/getGames';
 import { useFormStatus } from 'react-dom';
 import getTelegram, { hapticError } from '@/utils/telegram';
 import * as Icons from '@/icons';
-import { Category, CategoryConfig } from '@/utils/shared';
+import { Category, CategoryConfig, ResultData } from '@/utils/shared';
+import { getSongs } from '@/api/getSongs';
 
 const categories: CategoryConfig[] = [
   { value: Category.Game, label: <Icons.Game size={32} />, active: true },
-  { value: Category.Song, label: <Icons.Song size={32} />, active: false },
+  { value: Category.Song, label: <Icons.Song size={32} />, active: true },
   // { value: 'get', label: '🔗'},
   // { value: 'llm', label: '🤖'},
 ];
@@ -47,17 +47,27 @@ const SubmitData = ({
 };
 
 export default function Home() {
-  const [results, setResults] = useState<Game[] | null>([]);
+  const [results, setResults] = useState<ResultData[] | null>([]);
   const [hasFailed, setFailed] = useState<boolean>(false);
   const [category, setCategory] = useState<Category>(Category.Game);
   const [isDark, setDark] = useState<boolean>(false);
 
   const handleForm = async (formData: FormData) => {
+    const query = formData.get('query');
+    if (typeof query != 'string') return;
+  
+    let results: ResultData[] | null = [];
+
     if (formData.get('category') === Category.Game) {
-      const games = await getResults(formData);
-      setResults(games);
+      results = await getGames(query);
       setCategory(Category.Game);
     }
+    else if (formData.get('category') === Category.Song) {
+      results = await getSongs(query);
+      setCategory(Category.Song);
+    }
+
+    setResults(results);
   };
 
   useEffect(() => {
@@ -137,7 +147,7 @@ export default function Home() {
             )}
           </Select>
           <input
-            className='flex-1 px-2 min-w-0 w-full h-full rounded-md text-large outline outline-2 outline-offset-1 outline-transparent hover:outline-blue-500 bg-default hover:bg-default-100 appearance-none'
+            className='flex-1 px-2 min-w-0 w-full h-full rounded-md text-large text-foreground outline outline-2 outline-offset-1 outline-transparent hover:outline-blue-500 bg-default hover:bg-default-100 appearance-none'
             type='text'
             name='query'
             required
