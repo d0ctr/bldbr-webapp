@@ -11,6 +11,7 @@ import {
 } from '@nextui-org/react';
 import GameDetails from './GameDetails';
 import { Category, ResultData } from '@/utils/shared';
+import SongDetails from './SongDetails';
 
 export default function ResultCard({
   title,
@@ -56,6 +57,7 @@ export default function ResultCard({
       )}
       <CardBody>
         {type === Category.Game && <GameDetails details={details} />}
+        {type === Category.Song && <SongDetails details={details} />}
       </CardBody>
       {getTelegram() != null && (
         <CardFooter className='pt-0 overflow-visible'>
