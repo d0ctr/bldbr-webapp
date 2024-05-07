@@ -9,6 +9,7 @@ export type ResultData = {
     image_url?: string,
     details: object,
     type: Category,
+    url?: string,
 }
 
 export type CategoryConfig = {

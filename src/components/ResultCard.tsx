@@ -1,4 +1,3 @@
-import type { Game } from '@/api/getGames';
 import Share from '@/icons/Share';
 import getTelegram, { switchInlineQuery } from '@/utils/telegram';
 import {
@@ -19,6 +18,7 @@ export default function ResultCard({
   details,
   type,
   callback,
+  url,
 }: ResultData & { callback?: string }) {
   async function processRedirect(formData: FormData) {
     const callback = formData.get('callback');
@@ -42,9 +42,19 @@ export default function ResultCard({
             className='z-0 select-none object-cover object-center w-full max-h-72'
           />
           <div className='z-10 flex flex-col justify-end w-full bg-gradient-to-t from-black to-transparent text-center -mt-36 h-36'>
-            <h1 className='pb-4 px-2 font-bold text-large text-white'>
-              {title}
-            </h1>
+            {url ? (
+              <a
+                className='pb-4 px-2 font-bold text-large text-white underline hover:text-gray-300'
+                href={url}
+                target='_blank'
+              >
+                {title}
+              </a>
+            ) : (
+              <h1 className='pb-4 px-2 font-bold text-large text-white'>
+                {title}
+              </h1>
+            )}
           </div>
         </CardHeader>
       ) : (
