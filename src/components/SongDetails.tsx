@@ -10,29 +10,27 @@ export default function SongDetails({
     <>
       {album && (
         <div>
-          <Link href={album.url}>{album.name}</Link>
+          <b>Альбом</b>: <Link href={album.url}>{album.name}</Link>
           <br />
         </div>
       )}
       {primary_artist && (
         <div>
+          <b>Исполнитель</b>:{' '}
           <Link href={primary_artist.url}>{primary_artist.name}</Link>
-          <br />
-        </div>
-      )}
-      {!featured_artists?.length || (
-        <div>
-          feat.{' '}
-          {featured_artists
-            .map(({ name, url }, i, { length }) => (
+          {!featured_artists?.length || (
             <>
-              <Link key={i} href={url}>
-                {name}
-              </Link>
-              { i !== length -1 && ', ' }
+              {' feat. '}
+              {featured_artists.map(({ name, url }, i, { length }) => (
+                <>
+                  <Link key={i} href={url}>
+                    {name}
+                  </Link>
+                  {i !== length - 1 && ', '}
+                </>
+              ))}
             </>
-            ))}
-          <br />
+          )}
         </div>
       )}
       {release_date && (
@@ -49,7 +47,7 @@ export default function SongDetails({
               <Link key={i} href={url}>
                 {name}
               </Link>
-              { i !== length - 1 && ' | ' }
+              {i !== length - 1 && ' | '}
             </>
           ))}
           <br />

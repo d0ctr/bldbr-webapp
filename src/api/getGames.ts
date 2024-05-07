@@ -88,6 +88,7 @@ export const getGames = async (
             },
             image_url: game.background_image,
             type: Category.Game,
+            url: `https://rawg.io/games/${game.slug}`,
           } as Game)
       )
     )

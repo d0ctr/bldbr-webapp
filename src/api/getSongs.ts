@@ -80,19 +80,18 @@ export const getSongs = async (query: string): Promise<Song[] | null> => {
                 url: a.url,
               })),
               release_date: song.release_date,
-              media: [
-                ...(song.media?.map(({ provider, url }: any) => ({
+              media:
+                song.media?.map(({ provider, url }: any) => ({
                   name: provider,
                   url,
-                })) || []),
-                { name: 'genius', url: song.url },
-              ],
+                })),
             },
             image_url:
               song.song_art_image_url ||
               song.header_image_url ||
               song.album?.cover_art_url,
             type: Category.Song,
+            url: song.url,
           } as Song)
       )
     )
