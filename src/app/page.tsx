@@ -157,8 +157,8 @@ export default function Home() {
             hasFailed={hasFailed}
           />
         </form>
-        <Divider className='w-screen overflow-visible' />
-        <div className='gap-4 mx-2 overflow-visible flex flex-col'>
+        <Divider className='overflow-visible min-w-full w-[95vw]' />
+        <div className='gap-4 px-2 flex flex-col'>
           {results == null || !results.length
             ? ''
             : results.map((result) => (
