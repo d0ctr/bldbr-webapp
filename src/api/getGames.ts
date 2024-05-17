@@ -93,8 +93,5 @@ export const getGames = async (
       )
     )
     .then((games) => (games.length == 0 ? null : games))
-    .catch((err) => {
-      console.error(`Error getting games: ${err.toString()}`);
-      return null;
-    });
+    .catch((err) => (console.error(`Error getting games: ${err.toString()}`), null));
 };

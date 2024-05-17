@@ -1,6 +1,7 @@
 export enum Category {
   Game = 'game',
   Song = 'song',
+  Currency = 'currency'
 }
 
 export type ResultData = {
