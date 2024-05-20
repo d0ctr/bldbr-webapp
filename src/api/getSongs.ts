@@ -95,8 +95,5 @@ export const getSongs = async (query: string): Promise<Song[] | null> => {
           } as Song)
       )
     )
-    .catch((err) => {
-      console.error(`Error getting songs: ${err}: ${err.stack}`);
-      return null;
-    });
+    .catch((err) => (console.error(`Error getting songs: ${err}: ${err.stack}`), null));
 };
