@@ -87,7 +87,7 @@ export default function CurrencySelector({
         </AutocompleteItem>
       )}
     </Autocomplete>
-    <input name={name} hidden value={selectedKey || defaultCurrency?.id}></input>
+    <input name={name} hidden value={selectedKey || defaultCurrency?.id} readOnly></input>
   </>
   );
 }

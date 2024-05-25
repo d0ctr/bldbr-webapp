@@ -1,4 +1,4 @@
-import { Currency } from '@/api/getCurrency';
+import { Currency, Game, Song } from '@/icons';
 
 export enum Category {
   Game = 'game',
@@ -35,3 +35,15 @@ export const defaultToCurrency = {
   symbol: 'TON',
   fullName: 'Toncoin (TON)'
 };
+
+export const categories = [
+  { value: Category.Game, label: (<Game size={32}/>), active: true },
+  { value: Category.Song, label: (<Song size={32}/>), active: true },
+  {
+    value: Category.Currency,
+    label: (<Currency size={32}/>),
+    active: true,
+  },
+  // { value: 'get', label: '🔗'},
+  // { value: 'llm', label: '🤖'},
+];

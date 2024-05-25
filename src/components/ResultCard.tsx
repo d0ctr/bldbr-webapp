@@ -22,7 +22,7 @@ export default function ResultCard({
   type,
   callback,
   url,
-}: ResultData & { callback?: string }) {
+}: ResultData & { callback?: string | null }) {
   async function processRedirect(formData: FormData) {
     const callback = formData.get('callback');
     switchInlineQuery(`/c ${callback}`, [
