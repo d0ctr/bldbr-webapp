@@ -1,10 +1,10 @@
 'use client';
 import { Cross, PaperPlane } from '@/icons';
 import { Button } from '@nextui-org/button';
-import { useEffect, useState } from 'react';
+import { FormEvent, useEffect, useState } from 'react';
 import { useFormStatus } from 'react-dom';
 
-export default function HeaderButton({ error = false }: { error?: boolean }) {
+export default function HeaderButton({ error = false, onSubmit }: { error?: boolean, onSubmit?: (e: FormEvent) => void }) {
     const { pending } = useFormStatus();
     const [hasFailed, setHasFailed] = useState(false);
     useEffect(() => {
@@ -26,7 +26,7 @@ export default function HeaderButton({ error = false }: { error?: boolean }) {
             disabled={hasFailed}
             variant='bordered'
             type='submit'
-            disableAnimation
+            onSubmit={onSubmit}
         >
             {hasFailed ? <Cross size={32} /> : <PaperPlane size={32} />}
         </Button>

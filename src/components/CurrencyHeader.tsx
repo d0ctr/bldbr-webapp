@@ -22,7 +22,6 @@ export default function CurrencyHeader() {
             <Button
                 className='flex-none h-full w-12 pr-0.5 data-[hover=true]:border-blue-500 hover:text-blue-500 bg-default hover:bg-default-100'
                 variant='bordered'
-                disableAnimation
                 isIconOnly
                 onClick={() => setReverseConversion((prev) => !prev)}
             >

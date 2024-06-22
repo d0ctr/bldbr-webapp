@@ -3,9 +3,12 @@ const nextConfig = {
     images: {
         remotePatterns: [
             {
-                hostname: 'media.rawg.io'
-            }
-        ]
+                hostname: 'media.rawg.io',
+            },
+            {
+                hostname: 'images.genius.com',
+            },
+        ],
     },
     experimental: {
         serverActions: {
@@ -19,8 +22,7 @@ const nextConfig = {
                 '*.app.github.dev',
                 'localhost:3000',
             ],
-
-        }
+        },
     },
 };
 

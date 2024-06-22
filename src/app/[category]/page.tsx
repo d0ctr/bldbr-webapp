@@ -3,65 +3,46 @@
 import Header from '@/components/Header';
 import { Category, ResultData } from '@/utils/shared';
 import { permanentRedirect } from 'next/navigation';
-import { useFormState } from 'react-dom';
 import { handleForm } from '../actions';
-import { getGames } from '@/api/getGames';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import Results from '@/components/Results';
-import { getSongs } from '@/api/getSongs';
-import { getConversion } from '@/api/getCurrency';
 
 export default function CategorySearch({
     params: { category },
-    searchParams: { q, from, to },
+    searchParams: { query, from, to },
 }: {
-    params: { category?: string; };
-    searchParams: { q?: string; from?: string; to?: string; };
+    params: { category?: string };
+    searchParams: { query?: string; from?: string; to?: string };
 }) {
     const selectedCategory = Object.values(Category).find(
-        (v) => v.toString() === category
+        (v) => v.toString() === category,
     );
-    if (!selectedCategory) permanentRedirect('/');
+    if (!selectedCategory) permanentRedirect('/game');
 
-    const [formResults, formAction] = useFormState(handleForm, []);
     const [results, setResults] = useState<ResultData[] | null>([]);
     const [error, setError] = useState(false);
 
-    const parseResults = useCallback((newResults: ResultData | ResultData[] | null) => {
-        if (newResults === undefined) {
-            setResults([]);
-        }
-        else if (newResults === null || Array.isArray(newResults)) {
-            setResults(newResults);
-        }
-        else {
-            setResults(prev => prev ? [newResults, ...prev] : [newResults]);
-        }
-    }, []);
-
-    useEffect(() => {
-        if (q) {
-            let promise;
-            switch(selectedCategory) {
-                case Category.Game:
-                    promise = getGames(q);
-                    break;
-                case Category.Song:
-                    promise = getSongs(q);
-                    break;
-                case Category.Currency:
-                    const amount = Number(q);
-                    if (from && to && !isNaN(amount)) promise = getConversion(from, to, amount);
-                    break;
+    const parseResults = useCallback(
+        (newResults: ResultData | ResultData[] | null) => {
+            if (newResults === undefined) {
+                setResults([]);
+            } else if (newResults === null || Array.isArray(newResults)) {
+                setResults(newResults);
+            } else {
+                setResults((prev) =>
+                    prev ? [newResults, ...prev] : [newResults],
+                );
             }
-            promise && promise.then(parseResults);
-        }
-        console.log([q, from, to]);
-    }, [q, from, to, selectedCategory, parseResults]);
+        },
+        [],
+    );
 
     useEffect(() => {
-        formResults !== undefined && parseResults(formResults);
-    }, [formResults, parseResults]);
+        if (query) {
+            handleForm({ category: selectedCategory, value: query, args: { from, to } }).then((r) => parseResults(r));
+        }
+        console.log([query, from, to]);
+    }, [query, from, to, selectedCategory, parseResults]);
 
     useEffect(() => {
         if (results === null) setError(true);
@@ -73,11 +54,13 @@ export default function CategorySearch({
             <div className='flex flex-col justify-start items-center gap-4 max-w-lg py-4'>
                 <Header
                     selectedCategory={selectedCategory}
-                    action={formAction}
-                    value={q}
+                    onResults={(r) => parseResults(r)}
+                    value={query}
                     error={error}
                 />
-                {results && <Results results={results} type={selectedCategory}/>}
+                {results && (
+                    <Results results={results} type={selectedCategory} />
+                )}
             </div>
         </main>
     );

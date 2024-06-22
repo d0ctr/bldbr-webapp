@@ -20,7 +20,7 @@ export default function HeaderInput({
             }
             setValue(value);
         },
-        [selectedCategory]
+        [selectedCategory],
     );
 
     return (

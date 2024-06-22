@@ -14,24 +14,25 @@ export async function categoryChange(keys: Selection) {
     redirect(`/${category}`);
 }
 
-export async function handleForm(
-    __: ResultData[] | ResultData | null | undefined,
-    formData: FormData
-) {
-    'use server';
-    const query = formData.get('query');
-    if (typeof query != 'string') return;
-
+export async function handleForm({
+    category,
+    value,
+    args,
+}: {
+    category: Category;
+    value: string;
+    args?: any;
+}) {
     let results: ResultData[] | ResultData | null = [];
 
-    if (formData.get('category') === Category.Game) {
-        results = await getGames(query);
-    } else if (formData.get('category') === Category.Song) {
-        results = await getSongs(query);
-    } else if (formData.get('category') === Category.Currency) {
-        const from = formData.get('from') as string;
-        const to = formData.get('to') as string;
-        const amount = Number(query);
+    if (category === Category.Game) {
+        results = await getGames(value);
+    } else if (category === Category.Song) {
+        results = await getSongs(value);
+    } else if (category === Category.Currency) {
+        const from = args?.from as string;
+        const to = args?.to as string;
+        const amount = Number(value);
         if (from && to && !isNaN(amount)) {
             results = await getConversion(from, to, amount);
         }

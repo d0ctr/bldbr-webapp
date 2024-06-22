@@ -1,12 +1,12 @@
-import { Category, ResultData } from '@/utils/shared';
-import ResultCard from './ResultCard';
+import { Category, isCallback, ResultData } from '@/utils/shared';
+import { ResultCard } from './ResultCard';
 
 export default function Results({
     results = [],
-    type
+    type,
 }: {
     results: ResultData[];
-    type: Category
+    type: Category;
 }) {
     if (!results.length) return;
 
@@ -19,7 +19,9 @@ export default function Results({
                           key={result.slug}
                           {...result}
                           type={type}
-                          callback={result.slug ? `${type}:${result.slug}` : null}
+                          callback={
+                              result.slug && isCallback(type) ? `${type}:${result.slug}` : null
+                          }
                       />
                   ))}
         </div>

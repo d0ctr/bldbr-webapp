@@ -4,48 +4,65 @@ import { categories, Category, CategoryConfig } from '@/utils/shared';
 import { Select, SelectItem, SelectedItems } from '@nextui-org/select';
 import HeaderButton from './HeaderButton';
 import { Divider } from '@nextui-org/divider';
-import { categoryChange } from '@/app/actions';
+import { categoryChange, handleForm } from '@/app/actions';
 import HeaderInput from './HeaderInput';
 import CurrencyHeader from './CurrencyHeader';
 import { redirect } from 'next/navigation';
+import { FormEvent } from 'react';
 
 export default function Header({
     selectedCategory = Category.Game,
     error = false,
     value = '',
-    action,
+    onResults,
 }: {
     error?: boolean;
     selectedCategory?: Category;
-    action?: (formData: FormData) => void;
+    onResults: (results: any) => void;
     value?: string;
 }) {
-    if (!action) {
-        action = async (formData: FormData) => {
-            const category = formData.get('category');
-            const q = formData.get('query');
-            const from = formData.get('from');
-            const to = formData.get('to');
-            let params: { [name: string]: string } = {};
-            if (q) {
-                params = {
-                    ...params,
-                    q: q.toString(),
-                };
-            }
-            if (from && to) {
-                params = {
-                    ...params,
-                    from: from.toString(),
-                    to: to.toString(),
-                };
-            }
-            redirect(`/${category}?${new URLSearchParams(params)}`);
-        };
-    }
+    // if (!action) {
+    //     action = async (formData: FormData) => {
+    //         const category = formData.get('category');
+    //         const q = formData.get('query');
+    //         const from = formData.get('from');
+    //         const to = formData.get('to');
+    //         let params: { [name: string]: string } = {};
+    //         if (q) {
+    //             params = {
+    //                 ...params,
+    //                 q: q.toString(),
+    //             };
+    //         }
+    //         if (from && to) {
+    //             params = {
+    //                 ...params,
+    //                 from: from.toString(),
+    //                 to: to.toString(),
+    //             };
+    //         }
+    //         redirect(`/${category}?${new URLSearchParams(params)}`);
+    //     };
+    // }
     return (
         <>
-            <form className='flex flex-col px-2 w-full gap-y-2' action={action}>
+            <form
+                className='flex flex-col px-2 w-full gap-y-2'
+                onSubmit={(e) => {
+                    e.preventDefault();
+                    const { query, from, to } =
+                        e.target as FormEvent['target'] & {
+                            query: { value: string };
+                            from?: { value: string };
+                            to?: { value: string };
+                        };
+                    handleForm({
+                        category: selectedCategory,
+                        value: query.value,
+                        args: { from: from?.value, to: to?.value },
+                    }).then((r) => onResults(r));
+                }}
+            >
                 <div className='flex flex-row gap-2 min-h-12 min-w-full'>
                     <Select
                         items={categories.filter((c) => c.active)}
@@ -96,7 +113,10 @@ export default function Header({
                             );
                         }}
                     </Select>
-                    <HeaderInput selectedCategory={selectedCategory} value={value} />
+                    <HeaderInput
+                        selectedCategory={selectedCategory}
+                        value={value}
+                    />
                     <HeaderButton error={error} />
                 </div>
                 {selectedCategory === Category.Currency && <CurrencyHeader />}
