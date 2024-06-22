@@ -17,12 +17,12 @@
 } */
 
 body {
-  color: hsl(var(--nextui-foreground));
-  background-color: hsl(var(--nextui-background));
+    color: hsl(var(--nextui-foreground));
+    background-color: hsl(var(--nextui-background));
 }
 
 @layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
+    .text-balance {
+        text-wrap: balance;
+    }
 }
