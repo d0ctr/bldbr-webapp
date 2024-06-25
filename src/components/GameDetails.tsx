@@ -1,6 +1,7 @@
 import { Game } from '@/api/getGames';
 import { GameHLTBDetails } from './GameHLTBDetails';
 import { Suspense } from 'react';
+import { Skeleton } from '@nextui-org/react';
 
 export default function GameDetails({
     details: { released, platforms, metacritic, stores },
@@ -36,7 +37,9 @@ export default function GameDetails({
                     <br />
                 </div>
             ) : null}
-            {released && (<Suspense><GameHLTBDetails name={title} released={released} /></Suspense>)}
+            {released && (
+                <GameHLTBDetails name={title} released={released} />
+            )}
         </>
     );
 }

@@ -1,5 +1,13 @@
 'use server';
-import { Category, ResultData } from '@/utils/shared';
+import {
+    ActionResult,
+    ActionResultStatus,
+    Category,
+    ErrorMessage,
+    getActionError,
+    getActionSuccess,
+    ResultData,
+} from '@/utils/shared';
 
 export interface Song extends ResultData {
     slug: string;
@@ -15,24 +23,29 @@ export interface Song extends ResultData {
     type: Category.Song;
 }
 
-async function searchSongs(query: string) {
+async function searchSongs(query: string, page: number = 1) {
     return await fetch(
-        `https://api.genius.com/search?` + new URLSearchParams({ q: query }),
+        `https://api.genius.com/search?` + new URLSearchParams({ q: query, page: page.toString() }),
         {
             headers: {
                 Authorization: `Bearer ${process.env.GENIUS_TOKEN}`,
             },
-        },
+        }
     )
         .then((res) =>
-            !res.ok ? Promise.reject('non-200 response') : res.json(),
+            !res.ok
+                ? Promise.reject({
+                      msg: 'non-200 response',
+                      cause: res.statusText,
+                  })
+                : res.json()
         )
         .then((res) =>
             res.meta?.status !== 200
                 ? Promise.reject('bad 200 response')
                 : res.response.hits
                       .filter((hit: any) => hit.type === 'song')
-                      .map((hit: any) => hit.result),
+                      .map((hit: any) => hit.result)
         );
 }
 
@@ -43,26 +56,26 @@ async function getSongDetails(id: number) {
         },
     })
         .then((res) =>
-            !res.ok ? Promise.reject('non-200 response') : res.json(),
+            !res.ok ? Promise.reject('non-200 response') : res.json()
         )
         .then((res) =>
             res.meta?.status !== 200
                 ? Promise.reject('bad 200 response')
-                : res.response.song,
+                : res.response.song
         );
 }
 
-export const getSongs = async (query: string): Promise<Song[] | null> => {
+export const getSongs = async (query: string, page = 1): Promise<ActionResult> => {
     if (
         typeof process.env.GENIUS_TOKEN !== 'string' ||
         !process.env.GENIUS_TOKEN
     ) {
-        return null;
+        return getActionError(ErrorMessage.SERVICE_NOT_AVAILABLE);
     }
 
-    return searchSongs(query)
+    return searchSongs(query, page)
         .then((songs) =>
-            Promise.all(songs.map(({ id }: any) => getSongDetails(id))),
+            Promise.all(songs.map(({ id }: any) => getSongDetails(id)))
         )
         .then((songs) =>
             songs.map(
@@ -83,14 +96,14 @@ export const getSongs = async (query: string): Promise<Song[] | null> => {
                                 (a: any) => ({
                                     name: a.name,
                                     url: a.url,
-                                }),
+                                })
                             ),
                             release_date: song.release_date,
                             media: song.media?.map(
                                 ({ provider, url }: any) => ({
                                     name: provider,
                                     url,
-                                }),
+                                })
                             ),
                         },
                         image_url:
@@ -99,12 +112,12 @@ export const getSongs = async (query: string): Promise<Song[] | null> => {
                             song.album?.cover_art_url,
                         type: Category.Song,
                         url: song.url,
-                    }) as Song,
-            ),
+                    } as Song)
+            )
         )
-        .catch(
-            (err) => (
-                console.error(`Error getting songs: ${err}: ${err.stack}`), null
-            ),
-        );
+        .then((r) => getActionSuccess(r))
+        .catch((err) => {
+            console.error(`Error getting songs: ${JSON.stringify(err)} ${err.toString()}`);
+            return getActionError(ErrorMessage.REQUEST_ERROR);
+        });
 };

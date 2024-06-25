@@ -1,5 +1,13 @@
 'use server';
-import { Category, ResultData } from '@/utils/shared';
+import {
+    ActionResult,
+    ActionResultStatus,
+    Category,
+    ErrorMessage,
+    getActionError,
+    getActionSuccess,
+    ResultData,
+} from '@/utils/shared';
 import { HowLongToBeatService } from 'howlongtobeat';
 
 const hltb = new HowLongToBeatService();
@@ -26,11 +34,11 @@ export interface HLTBDetails {
 
 export const getGames = async (
     query: string,
+    page = 1,
     page_size = 10,
-    page = 1
-): Promise<Game[] | null> => {
+): Promise<ActionResult> => {
     if (typeof process.env.RAWG_TOKEN !== 'string' || !process.env.RAWG_TOKEN) {
-        return null;
+        return getActionError(ErrorMessage.SERVICE_NOT_AVAILABLE);
     }
 
     return await fetch(
@@ -53,7 +61,7 @@ export const getGames = async (
         .then((res) => res.json())
         .then(({ results: games }) =>
             games.length == 0
-                ? null
+                ? [] 
                 : games.map(
                       (game: any) =>
                           ({
@@ -73,11 +81,11 @@ export const getGames = async (
                           } as Game)
                   )
         )
-        .catch(
-            (err) => (
-                console.error(`Error getting games: ${JSON.stringify(err)}`), null
-            )
-        );
+        .then(r => getActionSuccess(r))
+        .catch((err) => {
+            console.error(`Error getting games: ${JSON.stringify(err)} ${err.toString()}`);
+            return getActionError(ErrorMessage.REQUEST_ERROR);
+        });
 };
 
 export const getHLTBDDetails = async ({
@@ -91,7 +99,6 @@ export const getHLTBDDetails = async ({
 
     const year = new Date(released).getFullYear();
     if (!year) return null;
-
 
     const { signal } = new AbortController();
     const hltbResult = await hltb

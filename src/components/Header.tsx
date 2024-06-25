@@ -7,61 +7,25 @@ import { Divider } from '@nextui-org/divider';
 import { categoryChange, handleForm } from '@/app/actions';
 import HeaderInput from './HeaderInput';
 import CurrencyHeader from './CurrencyHeader';
-import { redirect } from 'next/navigation';
-import { FormEvent } from 'react';
+import { useFormStatus } from 'react-dom';
 
 export default function Header({
     selectedCategory = Category.Game,
+    action,
     error = false,
     value = '',
-    onResults,
 }: {
-    error?: boolean;
     selectedCategory?: Category;
-    onResults: (results: any) => void;
+    action?: (payload: FormData) => void;
+    error?: boolean;
     value?: string;
+    page?: number;
 }) {
-    // if (!action) {
-    //     action = async (formData: FormData) => {
-    //         const category = formData.get('category');
-    //         const q = formData.get('query');
-    //         const from = formData.get('from');
-    //         const to = formData.get('to');
-    //         let params: { [name: string]: string } = {};
-    //         if (q) {
-    //             params = {
-    //                 ...params,
-    //                 q: q.toString(),
-    //             };
-    //         }
-    //         if (from && to) {
-    //             params = {
-    //                 ...params,
-    //                 from: from.toString(),
-    //                 to: to.toString(),
-    //             };
-    //         }
-    //         redirect(`/${category}?${new URLSearchParams(params)}`);
-    //     };
-    // }
     return (
-        <>
+        <div className='flex flex-col w-full left-0'>
             <form
                 className='flex flex-col px-2 w-full gap-y-2'
-                onSubmit={(e) => {
-                    e.preventDefault();
-                    const { query, from, to } =
-                        e.target as FormEvent['target'] & {
-                            query: { value: string };
-                            from?: { value: string };
-                            to?: { value: string };
-                        };
-                    handleForm({
-                        category: selectedCategory,
-                        value: query.value,
-                        args: { from: from?.value, to: to?.value },
-                    }).then((r) => onResults(r));
-                }}
+                action={action}
             >
                 <div className='flex flex-row gap-2 min-h-12 min-w-full'>
                     <Select
@@ -121,7 +85,7 @@ export default function Header({
                 </div>
                 {selectedCategory === Category.Currency && <CurrencyHeader />}
             </form>
-            <Divider className='overflow-visible min-w-full w-[95vw]' />
-        </>
+            <Divider className='mt-4 scroll-m-5' />
+        </div>
     );
 }

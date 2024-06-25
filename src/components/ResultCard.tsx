@@ -15,6 +15,7 @@ import ConversionDetails from './CurrencyDetails';
 import { Conversion } from '@/api/getCurrency';
 import Image from 'next/image';
 import { Game } from '@/api/getGames';
+import { MutableRefObject } from 'react';
 
 export function ResultCard({
     title,
@@ -23,7 +24,8 @@ export function ResultCard({
     type,
     callback,
     url,
-}: ResultData & { callback?: string | null }) {
+    loadRef,
+}: ResultData & { callback?: string | null; loadRef?: MutableRefObject<any> }) {
     async function processRedirect(formData: FormData) {
         const callback = formData.get('callback');
         switchInlineQuery(`/c ${callback}`, [
@@ -106,6 +108,7 @@ export function ResultCard({
                     </form>
                 </CardFooter>
             )}
+            <div ref={loadRef}/>
         </Card>
     );
 }

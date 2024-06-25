@@ -1,6 +1,15 @@
 'use server';
 
-import { Category, ResultData } from '@/utils/shared';
+import {
+    ActionResult,
+    ActionResultStatus,
+    Category,
+    ErrorMessage,
+    getActionError,
+    getActionSuccess,
+    ResultData,
+} from '@/utils/shared';
+import { number } from '@tma.js/sdk-react';
 
 const COINMARKET_API_BASE = 'https://pro-api.coinmarketcap.com';
 
@@ -23,6 +32,15 @@ export interface Conversion extends ResultData {
         price: number;
     };
 }
+
+type ConversionResult = {
+    quote: {
+        [symbol: Currency['symbol']]: {
+            price: number;
+            last_updated: string;
+        };
+    };
+};
 
 let currencies: Currency[] = [];
 
@@ -51,27 +69,27 @@ const fetchCurrencies = async ({
         {
             headers: { 'X-CMC_PRO_API_KEY': process.env.COINMARKETCAP_TOKEN },
             signal,
-        },
+        }
     )
         .then((res) =>
             res.ok
                 ? res.json()
                 : Promise.reject(
-                      `Bad response: ${res.status} ${res.statusText}`,
-                  ),
+                      `Bad response: ${res.status} ${res.statusText}`
+                  )
         )
         .then((json) =>
             json.status.error_code
                 ? Promise.reject(
-                      `Bad response: ${json.status.error_code} ${json.status.error_message}`,
+                      `Bad response: ${json.status.error_code} ${json.status.error_message}`
                   )
-                : json.data,
+                : json.data
         )
         .catch(
             (e) => (
                 console.error(`Error getting fiat currencies: ${e.toString()}`),
                 null
-            ),
+            )
         );
 
     if (fiat_res === null) return null;
@@ -80,7 +98,7 @@ const fetchCurrencies = async ({
         ...fiat_res.map((v) => ({
             ...v,
             fullName: `${v.name}${v.sign ? ` "${v.sign}"` : ''} (${v.symbol})`,
-        })),
+        }))
     );
 
     const crypto_res: Currency[] | null = await fetch(
@@ -90,37 +108,39 @@ const fetchCurrencies = async ({
         {
             headers: { 'X-CMC_PRO_API_KEY': process.env.COINMARKETCAP_TOKEN },
             signal,
-        },
+        }
     )
         .then((res) =>
             res.ok
                 ? res.json()
                 : Promise.reject(
-                      `Bad response: ${res.status} ${res.statusText}`,
-                  ),
+                      `Bad response: ${res.status} ${res.statusText}`
+                  )
         )
         .then((json) =>
             json.status.error_code
                 ? Promise.reject(
-                      `Bad response: ${json.status.error_code} ${json.status.error_message}`,
+                      `Bad response: ${json.status.error_code} ${json.status.error_message}`
                   )
-                : json.data,
+                : json.data
         )
         .catch(
             (e) => (
                 console.error(
-                    `Error getting crypto currencies: ${e.toString()}`,
+                    `Error getting crypto currencies: ${e.toString()}`
                 ),
                 null
-            ),
+            )
         );
 
     if (crypto_res !== null) {
         currencies.push(
             ...crypto_res.map((v) => ({
                 ...v,
-                fullName: `${v.name}${v.sign ? ` "${v.sign}"` : ''} (${v.symbol})`,
-            })),
+                fullName: `${v.name}${v.sign ? ` "${v.sign}"` : ''} (${
+                    v.symbol
+                })`,
+            }))
         );
     }
 
@@ -144,74 +164,92 @@ export const getCurrenciesList = async ({
         search == null
             ? result
             : result.filter((v) =>
-                  v.fullName.toLowerCase().includes(search.toLowerCase()),
+                  v.fullName.toLowerCase().includes(search.toLowerCase())
               )
     ).slice(offset, offset + limit);
+};
+
+export const getCurrenciesPairById = async ({
+    from,
+    to,
+    signal,
+}: {
+    from: number;
+    to: number;
+    signal?: AbortSignal;
+}) => {
+    const result = await fetchCurrencies({ signal });
+
+    return [result?.find(cur => cur.id === from), result?.find(cur => cur.id === to)];
 };
 
 export const getConversion = async (
     fromId: string,
     toId: string,
-    amount: number,
-): Promise<Conversion | null> => {
-    if (typeof process.env.COINMARKETCAP_TOKEN !== 'string') return null;
-    const res = (await fetch(
+    amount: number
+): Promise<ActionResult> => {
+    if (typeof process.env.COINMARKETCAP_TOKEN !== 'string') {
+        return getActionError(ErrorMessage.SERVICE_NOT_AVAILABLE);
+    }
+
+    const from = currencies.find(({ id }) => id === Number(fromId));
+    const to = currencies.find(({ id }) => id === Number(toId));
+
+    if (!from || !to) {
+        return getActionError(
+            `Несуществующая валюта: ${!from ? fromId : toId}`
+        );
+    }
+
+    return await fetch(
         `${COINMARKET_API_BASE}/v2/tools/price-conversion?${new URLSearchParams(
             {
                 amount: amount.toString(),
                 id: fromId.toString(),
                 convert_id: toId.toString(),
-            },
+            }
         )}`,
         {
             headers: { 'X-CMC_PRO_API_KEY': process.env.COINMARKETCAP_TOKEN },
-        },
+        }
     )
-        .then((res) =>
-            res.ok
-                ? res.json()
-                : Promise.reject(
-                      `Bad response: ${res.status} ${res.statusText}`,
-                  ),
+        .then((r) =>
+            r.ok
+                ? r.json()
+                : Promise.reject({
+                      msg: `non-200 response`,
+                      cause: r.statusText,
+                  })
         )
         .then((json) =>
             json.status.error_code
-                ? Promise.reject(
-                      `Bad response: ${json.status.error_code} ${json.status.error_message}`,
-                  )
-                : json.data,
+                ? Promise.reject({
+                      msg: `Bad response: ${json.status.error_code}`,
+                      status: json.status.error_message,
+                  })
+                : (json.data as ConversionResult)
         )
-        .catch(
-            (e) => (
-                console.error(`Error getting conversion: ${e.toString()}`), null
-            ),
-        )) as {
-        quote: {
-            [symbol: string]: {
-                price: number;
-                last_updated: string;
-            };
-        };
-    } | null;
-
-    if (res === null) return null;
-
-    const price = Object.values(res.quote)[0]?.price;
-    if (price == null) return null;
-
-    const from = currencies.find(({ id }) => id === Number(fromId));
-    const to = currencies.find(({ id }) => id === Number(toId));
-
-    if (!from || !to) return null;
-
-    return {
-        slug: Date.now().toString(),
-        type: Category.Currency,
-        details: {
-            amount,
-            from,
-            to,
-            price,
-        },
-    };
+        .then((conversion) => {
+            if (!conversion.quote[to.id]?.price) {
+                return Promise.reject({
+                    msg: `No price for conversion from ${from.symbol}(${from.id}) to ${to.symbol}(${to.id})`,
+                });
+            }
+            return getActionSuccess({
+                slug: Date.now().toString(),
+                type: Category.Currency,
+                details: {
+                    amount,
+                    from,
+                    to,
+                    price: conversion.quote[to.id].price,
+                },
+            });
+        })
+        .catch((e) => {
+            console.error(
+                `Error getting conversion: ${JSON.stringify(e)} ${e.toString()}`
+            );
+            return getActionError(ErrorMessage.REQUEST_ERROR);
+        });
 };

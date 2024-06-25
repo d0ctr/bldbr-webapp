@@ -1,66 +1,110 @@
 'use client';
 
 import Header from '@/components/Header';
-import { Category, ResultData } from '@/utils/shared';
-import { permanentRedirect } from 'next/navigation';
-import { handleForm } from '../actions';
-import { useCallback, useEffect, useState } from 'react';
+import { parseCategory, ResultData } from '@/utils/shared';
+import { permanentRedirect, usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { SearchActionResult, getCategorySearch, handleForm } from '../actions';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import Results from '@/components/Results';
+import { useFormState } from 'react-dom';
+import { useInView } from 'framer-motion';
+import { Spinner } from '@nextui-org/spinner';
 
 export default function CategorySearch({
-    params: { category },
-    searchParams: { query, from, to },
+    params: { category }
 }: {
     params: { category?: string };
-    searchParams: { query?: string; from?: string; to?: string };
 }) {
-    const selectedCategory = Object.values(Category).find(
-        (v) => v.toString() === category,
-    );
+    const selectedCategory = parseCategory(category);
     if (!selectedCategory) permanentRedirect('/game');
 
-    const [results, setResults] = useState<ResultData[] | null>([]);
+    const searchParams = useSearchParams()
+    const [results, setResults] = useState<ResultData[]>([]);
     const [error, setError] = useState(false);
+    const [formResults, formAction] = useFormState(handleForm, null);
 
-    const parseResults = useCallback(
-        (newResults: ResultData | ResultData[] | null) => {
-            if (newResults === undefined) {
-                setResults([]);
-            } else if (newResults === null || Array.isArray(newResults)) {
-                setResults(newResults);
-            } else {
-                setResults((prev) =>
-                    prev ? [newResults, ...prev] : [newResults],
-                );
+    const query = searchParams.get('query') || '';
+
+    const loadRef = useRef(null);
+    const isInView = useInView(loadRef);
+    const [hasMore, setHasMore] = useState(false);
+
+    const [loadMore, setLoadMore] = useState(false);
+    const [isUpdating, setIsUpdating] = useState(false);
+
+    const router = useRouter();
+    const pathname = usePathname();
+
+    const parseResults = useCallback((newResults: SearchActionResult) => {
+        setIsUpdating(false);
+        if (newResults === null) return;
+        console.log(`new results: ${JSON.stringify({...newResults, data: newResults.status === 'error' || newResults.data?.length})}`);
+
+        if (newResults.status === 'ok' ) {
+            if (newResults.page > 1 && Array.isArray(results)) {
+                setResults([...results, ...newResults.data]);
             }
-        },
-        [],
-    );
+            else {
+                setResults(newResults.data);
+            }
+            setHasMore(!newResults.end);
+            router.push(`${pathname}?${newResults.searchParams}`, { scroll: false });
+        }
+        else if (newResults.status === 'error') {
+            setError(true);
+        }
+        
+    }, [setHasMore, setResults, results, router, setIsUpdating]);
 
     useEffect(() => {
         if (query) {
-            handleForm({ category: selectedCategory, value: query, args: { from, to } }).then((r) => parseResults(r));
+            const args = searchParams.entries();
+            setLoadMore(false);
+            setIsUpdating(true);
+            const payload = {
+                category: selectedCategory,
+                query,
+                page: 1,
+                ...Object.fromEntries(args),
+            }
+            if (loadMore) payload.page = Number(payload.page) + 1;
+            
+            console.log(`querying... ${JSON.stringify(payload)}`)
+            getCategorySearch(payload).then((r) => parseResults(r));
         }
-        console.log([query, from, to]);
-    }, [query, from, to, selectedCategory, parseResults]);
+    }, [query, loadMore]);
 
     useEffect(() => {
-        if (results === null) setError(true);
-        return () => setError(false);
-    }, [results]);
+        parseResults(formResults);
+    }, [formResults]);
+    
+    useEffect(() => {
+        if (isInView && hasMore && !loadMore && !isUpdating) {
+            console.log("Element is in view: ", isInView);
+            setLoadMore(true);
+        }
+    }, [hasMore, isInView, loadMore, isUpdating]);
+
+    useEffect(() => {
+        if (error) {
+            setError(() => false);
+        }
+    }, [error]);
+
 
     return (
-        <main className='flex flex-row justify-center min-h-screen min-w-80 bg-background text-foregound'>
-            <div className='flex flex-col justify-start items-center gap-4 max-w-lg py-4'>
+        <main className='flex flex-row justify-center min-h-screen min-w-80 bg-background text-foregound '>
+            <div className='flex flex-col justify-start gap-4 max-w-lg py-4'  >
                 <Header
                     selectedCategory={selectedCategory}
-                    onResults={(r) => parseResults(r)}
                     value={query}
+                    action={formAction}
                     error={error}
                 />
                 {results && (
                     <Results results={results} type={selectedCategory} />
                 )}
+                <div ref={loadRef} className={`w-full flex flex-row justify-center ${hasMore ? '' : 'hidden'}`} ><Spinner color='default' ></Spinner></div>
             </div>
         </main>
     );

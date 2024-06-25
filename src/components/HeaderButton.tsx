@@ -4,8 +4,7 @@ import { Button } from '@nextui-org/button';
 import { FormEvent, useEffect, useState } from 'react';
 import { useFormStatus } from 'react-dom';
 
-export default function HeaderButton({ error = false, onSubmit }: { error?: boolean, onSubmit?: (e: FormEvent) => void }) {
-    const { pending } = useFormStatus();
+export default function HeaderButton({ error = false }: { error?: boolean }) {
     const [hasFailed, setHasFailed] = useState(false);
     useEffect(() => {
         if (error) {
@@ -15,6 +14,8 @@ export default function HeaderButton({ error = false, onSubmit }: { error?: bool
             }, 2000);
         }
     }, [error]);
+
+    const { pending } = useFormStatus();
 
     return (
         <Button
@@ -26,7 +27,6 @@ export default function HeaderButton({ error = false, onSubmit }: { error?: bool
             disabled={hasFailed}
             variant='bordered'
             type='submit'
-            onSubmit={onSubmit}
         >
             {hasFailed ? <Cross size={32} /> : <PaperPlane size={32} />}
         </Button>
