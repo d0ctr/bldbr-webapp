@@ -5,8 +5,8 @@ import { ThemeProvider } from 'next-themes';
 
 export function Providers({ children }: { children: React.ReactNode }) {
     return (
-        <NextUIProvider disableRipple>
-            <ThemeProvider enableSystem>{children}</ThemeProvider>
+        <NextUIProvider disableRipple >
+            <ThemeProvider enableSystem enableColorScheme attribute='class'>{children}</ThemeProvider>
         </NextUIProvider>
     );
 }

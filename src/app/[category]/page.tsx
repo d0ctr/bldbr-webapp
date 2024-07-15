@@ -93,7 +93,7 @@ export default function CategorySearch({
 
 
     return (
-        <main className='flex flex-row justify-center min-h-screen min-w-80 bg-background text-foregound '>
+        <main className='flex flex-row justify-center min-h-screen min-w-80'>
             <div className='flex flex-col justify-start gap-4 max-w-lg py-4'  >
                 <Header
                     selectedCategory={selectedCategory}

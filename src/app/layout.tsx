@@ -20,6 +20,16 @@ export default function RootLayout({
     return (
         <html lang='ru'>
             <head>
+                <meta
+                    name='theme-color'
+                    media='(prefers-color-scheme: light)'
+                    content='white'
+                />
+                <meta
+                    name='theme-color'
+                    media='(prefers-color-scheme: dark)'
+                    content='black'
+                />
                 <link
                     rel='apple-touch-icon'
                     sizes='180x180'
