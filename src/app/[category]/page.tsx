@@ -25,20 +25,20 @@ export default function CategorySearch({
 
     const query = searchParams.get('query') || '';
 
-    const loadRef = useRef(null);
-    const isInView = useInView(loadRef);
-    const [hasMore, setHasMore] = useState(false);
+    // const loadRef = useRef(null);
+    // const isInView = useInView(loadRef);
+    // const [hasMore, setHasMore] = useState(false);
 
-    const [loadMore, setLoadMore] = useState(false);
-    const [isUpdating, setIsUpdating] = useState(false);
+    // const [loadMore, setLoadMore] = useState(false);
+    // const [isUpdating, setIsUpdating] = useState(false);
 
     const router = useRouter();
     const pathname = usePathname();
 
     const parseResults = useCallback((newResults: SearchActionResult) => {
-        setIsUpdating(false);
+        // setIsUpdating(false);
         if (newResults === null) return;
-        console.log(`new results: ${JSON.stringify({...newResults, data: newResults.status === 'error' || newResults.data?.length})}`);
+        // console.log(`new results: ${JSON.stringify({...newResults, data: newResults.status === 'error' || newResults.data?.length})}`);
 
         if (newResults.status === 'ok' ) {
             if (newResults.page > 1 && Array.isArray(results)) {
@@ -47,43 +47,43 @@ export default function CategorySearch({
             else {
                 setResults(newResults.data);
             }
-            setHasMore(!newResults.end);
+            // setHasMore(!newResults.end);
             router.push(`${pathname}?${newResults.searchParams}`, { scroll: false });
         }
         else if (newResults.status === 'error') {
             setError(true);
         }
         
-    }, [setHasMore, setResults, results, router, setIsUpdating]);
+    }, [setResults, results, router /** , hasMore, setIsUpdating */]);
 
     useEffect(() => {
         if (query) {
             const args = searchParams.entries();
-            setLoadMore(false);
-            setIsUpdating(true);
+            // setLoadMore(false);
+            // setIsUpdating(true);
             const payload = {
                 category: selectedCategory,
                 query,
                 page: 1,
                 ...Object.fromEntries(args),
             }
-            if (loadMore) payload.page = Number(payload.page) + 1;
+            // if (loadMore) payload.page = Number(payload.page) + 1;
             
-            console.log(`querying... ${JSON.stringify(payload)}`)
+            // console.log(`querying... ${JSON.stringify(payload)}`);
             getCategorySearch(payload).then((r) => parseResults(r));
         }
-    }, [query, loadMore]);
+    }, [query /** , loadMore  */]);
 
     useEffect(() => {
         parseResults(formResults);
     }, [formResults]);
     
-    useEffect(() => {
-        if (isInView && hasMore && !loadMore && !isUpdating) {
-            console.log("Element is in view: ", isInView);
-            setLoadMore(true);
-        }
-    }, [hasMore, isInView, loadMore, isUpdating]);
+    // useEffect(() => {
+    //     if (isInView && hasMore && !loadMore && !isUpdating) {
+    //         console.log("Element is in view: ", isInView);
+    //         setLoadMore(true);
+    //     }
+    // }, [hasMore, isInView, loadMore, isUpdating]);
 
     useEffect(() => {
         if (error) {
@@ -104,7 +104,7 @@ export default function CategorySearch({
                 {results && (
                     <Results results={results} type={selectedCategory} />
                 )}
-                <div ref={loadRef} className={`w-full flex flex-row justify-center ${hasMore ? '' : 'hidden'}`} ><Spinner color='default' ></Spinner></div>
+                {/* <div ref={loadRef} className={`w-full flex flex-row justify-center ${hasMore ? '' : 'hidden'}`} ><Spinner color='default' ></Spinner></div> */}
             </div>
         </main>
     );

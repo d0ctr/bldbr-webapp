@@ -26,7 +26,7 @@ export default function Results({
                           callback={
                               result.slug && isCallback(type) ? `${type}:${result.slug}` : null
                           }
-                          loadRef={results.length - 1 === i ? loadRef : undefined}
+                          loadRef={loadRef}
                       />
                   ))}
         </div>
