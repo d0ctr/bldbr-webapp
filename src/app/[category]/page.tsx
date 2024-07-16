@@ -94,7 +94,7 @@ export default function CategorySearch({
 
     return (
         <main className='flex flex-row justify-center min-h-screen min-w-80'>
-            <div className='flex flex-col justify-start gap-4 max-w-lg py-4'  >
+            <div className='flex flex-col justify-start gap-4 py-4 max-w-lg w-full' >
                 <Header
                     selectedCategory={selectedCategory}
                     value={query}
