@@ -8,6 +8,9 @@ const nextConfig = {
             {
                 hostname: 'images.genius.com',
             },
+            {
+                hostname: 'image.tmdb.org',
+            },
         ],
     },
     experimental: {

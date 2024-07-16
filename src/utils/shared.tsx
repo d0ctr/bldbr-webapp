@@ -1,10 +1,11 @@
 import { Currency as CurrencyType } from '@/api/getCurrency';
-import { Currency, Game, Song } from '@/icons';
+import { Currency, Game, Movie, Song } from '@/icons';
 
 export enum Category {
     Game = 'game',
     Song = 'song',
     Currency = 'currency',
+    Movie = 'movie',
 }
 
 export function parseCategory(value: any): Category | undefined {
@@ -63,7 +64,7 @@ export const TON = {
     name: 'Toncoin',
     symbol: 'TON',
     fullName: 'Toncoin (TON)',
-}  as CurrencyType;
+} as CurrencyType;
 
 export const categories = [
     { value: Category.Game, label: <Game size={32} />, active: true },
@@ -73,6 +74,7 @@ export const categories = [
         label: <Currency size={32} />,
         active: true,
     },
+    { value: Category.Movie, label: <Movie size={32} />, active: true },
     // { value: 'get', label: '🔗'},
     // { value: 'llm', label: '🤖'},
 ];
@@ -83,6 +85,8 @@ export const isCallback = (cat: Category) => {
         case Category.Song:
             return true;
         case Category.Currency:
+        case Category.Movie:
+        default:
             return false;
     }
 };
@@ -91,3 +95,15 @@ export enum ErrorMessage {
     SERVICE_NOT_AVAILABLE = 'Сервис временно не доступен',
     REQUEST_ERROR = 'Ошибка на стороне сервиса, попробуйте позже',
 }
+
+export const dumpURLSearchParams = (
+    params: { [k: string]: any } | [string, any][]
+) => {
+    let entries;
+    if (Array.isArray(params)) {
+        entries = params;
+    } else {
+        entries = Object.entries(params);
+    }
+    return new URLSearchParams(entries.map(([k, v]) => [k, String(v)]));
+};

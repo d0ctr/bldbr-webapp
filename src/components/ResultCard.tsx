@@ -16,6 +16,8 @@ import { Conversion } from '@/api/getCurrency';
 import Image from 'next/image';
 import { Game } from '@/api/getGames';
 import { MutableRefObject } from 'react';
+import MovieDetails from './MovieDetails';
+import { Movie } from '@/api/getMovies';
 
 export function ResultCard({
     title,
@@ -81,6 +83,7 @@ export function ResultCard({
                     />
                 )}
                 {type === Category.Song && <SongDetails details={details} />}
+                {type === Category.Movie && <MovieDetails details={details as Movie['details']} />}
                 {type === Category.Currency && (
                     <ConversionDetails
                         details={details as Conversion['details']}

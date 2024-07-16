@@ -3,6 +3,7 @@ import {
     ActionResult,
     ActionResultStatus,
     Category,
+    dumpURLSearchParams,
     ErrorMessage,
     getActionError,
     getActionSuccess,
@@ -25,7 +26,7 @@ export interface Song extends ResultData {
 
 async function searchSongs(query: string, page: number = 1) {
     return await fetch(
-        `https://api.genius.com/search?` + new URLSearchParams({ q: query, page: page.toString() }),
+        `https://api.genius.com/search?` + dumpURLSearchParams({ q: query, page }),
         {
             headers: {
                 Authorization: `Bearer ${process.env.GENIUS_TOKEN}`,

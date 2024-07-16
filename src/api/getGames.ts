@@ -1,8 +1,8 @@
 'use server';
 import {
     ActionResult,
-    ActionResultStatus,
     Category,
+    dumpURLSearchParams,
     ErrorMessage,
     getActionError,
     getActionSuccess,
@@ -35,7 +35,7 @@ export interface HLTBDetails {
 export const getGames = async (
     query: string,
     page = 1,
-    page_size = 10,
+    page_size = 10
 ): Promise<ActionResult> => {
     if (typeof process.env.RAWG_TOKEN !== 'string' || !process.env.RAWG_TOKEN) {
         return getActionError(ErrorMessage.SERVICE_NOT_AVAILABLE);
@@ -43,11 +43,11 @@ export const getGames = async (
 
     return await fetch(
         `https://api.rawg.io/api/games?` +
-            new URLSearchParams({
+            dumpURLSearchParams({
                 key: process.env.RAWG_TOKEN,
                 search: query,
-                page_size: `${page_size}`,
-                page: `${page}`,
+                page_size,
+                page,
             })
     )
         .then((res) =>
@@ -61,7 +61,7 @@ export const getGames = async (
         .then((res) => res.json())
         .then(({ results: games }) =>
             games.length == 0
-                ? [] 
+                ? []
                 : games.map(
                       (game: any) =>
                           ({
@@ -81,9 +81,11 @@ export const getGames = async (
                           } as Game)
                   )
         )
-        .then(r => getActionSuccess(r))
+        .then((r) => getActionSuccess(r))
         .catch((err) => {
-            console.error(`Error getting games: ${JSON.stringify(err)} ${err.toString()}`);
+            console.error(
+                `Error getting games: ${JSON.stringify(err)} ${err.toString()}`
+            );
             return getActionError(ErrorMessage.REQUEST_ERROR);
         });
 };
