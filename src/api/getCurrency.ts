@@ -2,14 +2,13 @@
 
 import {
     ActionResult,
-    ActionResultStatus,
     Category,
+    dumpURLSearchParams,
     ErrorMessage,
     getActionError,
     getActionSuccess,
     ResultData,
 } from '@/utils/shared';
-import { number } from '@tma.js/sdk-react';
 
 const COINMARKET_API_BASE = 'https://pro-api.coinmarketcap.com';
 
@@ -102,7 +101,7 @@ const fetchCurrencies = async ({
     );
 
     const crypto_res: Currency[] | null = await fetch(
-        `${COINMARKET_API_BASE}/v1/cryptocurrency/map?${new URLSearchParams({
+        `${COINMARKET_API_BASE}/v1/cryptocurrency/map?${dumpURLSearchParams({
             listing_status: 'active',
         })}`,
         {
@@ -202,11 +201,11 @@ export const getConversion = async (
     }
 
     return await fetch(
-        `${COINMARKET_API_BASE}/v2/tools/price-conversion?${new URLSearchParams(
+        `${COINMARKET_API_BASE}/v2/tools/price-conversion?${dumpURLSearchParams(
             {
-                amount: amount.toString(),
-                id: fromId.toString(),
-                convert_id: toId.toString(),
+                amount,
+                id: fromId,
+                convert_id: toId,
             }
         )}`,
         {

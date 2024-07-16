@@ -1,7 +1,5 @@
 import { Game } from '@/api/getGames';
 import { GameHLTBDetails } from './GameHLTBDetails';
-import { Suspense } from 'react';
-import { Skeleton } from '@nextui-org/react';
 
 export default function GameDetails({
     details: { released, platforms, metacritic, stores },

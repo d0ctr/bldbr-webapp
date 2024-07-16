@@ -2,11 +2,13 @@
 
 import { getConversion } from '@/api/getCurrency';
 import { getGames } from '@/api/getGames';
+import { getMovies } from '@/api/getMovies';
 import { getSongs } from '@/api/getSongs';
 import {
     ActionResult,
     ActionResultStatus,
     Category,
+    dumpURLSearchParams,
     parseCategory,
     ResultData,
 } from '@/utils/shared';
@@ -56,7 +58,7 @@ export async function getCategorySearch({ category, query, ...args }: { category
     if (!category || !query) return null;
     let actionResult: ActionResult | null = null;
 
-    const searchParams = new URLSearchParams();
+    const searchParams = [];
     const { page } = args;
 
     const _page = !isNaN(Number(page)) ? Number(page) : 1;
@@ -64,13 +66,18 @@ export async function getCategorySearch({ category, query, ...args }: { category
     switch (category) {
         case Category.Game:
             actionResult = await getGames(query, _page);
-            searchParams.append('query', query);
-            searchParams.append('page', _page.toString());
+            searchParams.push(['query', query]);
+            searchParams.push(['page', _page]);
             break;
         case Category.Song:
             actionResult = await getSongs(query, _page);
-            searchParams.append('query', query);
-            searchParams.append('page', _page.toString());
+            searchParams.push(['query', query]);
+            searchParams.push(['page', _page]);
+            break;
+        case Category.Movie:
+            actionResult = await getMovies(query, _page);
+            searchParams.push(['query', query]);
+            searchParams.push(['page', _page]);
             break;
         case Category.Currency:
             const amount = Number(query);
@@ -79,9 +86,9 @@ export async function getCategorySearch({ category, query, ...args }: { category
                 break;
             }
             actionResult = await getConversion(from, to, amount);
-            searchParams.append('query', query);
-            searchParams.append('from', from);
-            searchParams.append('to', to);
+            searchParams.push(['query', query]);
+            searchParams.push(['from', from]);
+            searchParams.push(['to', to]);
             break;
     }
 
@@ -108,7 +115,7 @@ export async function getCategorySearch({ category, query, ...args }: { category
         return {
             status: 'ok',
             data,
-            searchParams: searchParams.toString(),
+            searchParams: dumpURLSearchParams(searchParams).toString(),
             end: data.length === 0 ? true : false,
             page: _page,
         };
