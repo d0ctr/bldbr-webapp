@@ -1,0 +1,42 @@
+name: 'Update version'
+
+on:
+  pull_request: 
+    branches: ["main"]
+    types: opened
+permissions:
+  contents: write
+
+jobs:
+  version_bump:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 'Checkout source code'
+        uses: 'actions/checkout@v3'
+      - name: 'Automated Version Bump (Major)'
+        id: version-bump-major
+        if: startsWith(github.event.pull_request.title, 'freeze')
+        uses: 'phips28/gh-action-bump-version@master'
+        with:
+          version-type: major
+          skip-tag: 'true'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: 'Automated Version Bump (Patch)'
+        id: version-bump-patch
+        if: startsWith(github.event.pull_request.title, 'fix')
+        uses: 'phips28/gh-action-bump-version@master'
+        with:
+          version-type: patch
+          skip-tag: 'true'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: 'Automated Version Bump (Minor)'
+        id: version-bump-minor
+        if: ${{ steps.version-bump-major.outcome == 'skipped' && steps.version-bump-patch.outcome == 'skipped' && !startsWith(github.event.pull_request.title, 'ignore') }}
+        uses: 'phips28/gh-action-bump-version@master'
+        with:
+          version-type: minor
+          skip-tag: 'true'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
