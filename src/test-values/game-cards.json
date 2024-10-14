@@ -1,0 +1,62 @@
+[
+    {
+        "slug": "alan-wake",
+        "title": "Alan Wake",
+        "text": "Дата релиза: 14.5.2010\nMetacritic: 83\nПлатформы: PC, Xbox One, Xbox 360\nМагазины: Steam, Xbox Store, GOG, Xbox 360 Store, Epic Games\n",
+        "image_url": "https://media.rawg.io/media/games/5c0/5c0dd63002cb23f804aab327d40ef119.jpg"
+    },
+    {
+        "slug": "alan-wake-the-signal",
+        "title": "Alan Wake: The Signal",
+        "text": "Дата релиза: 27.7.2010\nMetacritic: 75\nПлатформы: PC, Xbox One, Xbox 360\n",
+        "image_url": "https://media.rawg.io/media/screenshots/2fb/2fb3125338d521589df6137c0bd0813c.jpg"
+    },
+    {
+        "slug": "alan-wake-the-writer",
+        "title": "Alan Wake: The Writer",
+        "text": "Дата релиза: 12.10.2010\nMetacritic: 80\nПлатформы: PC, Xbox One, Xbox 360\n",
+        "image_url": "https://media.rawg.io/media/screenshots/789/7892d7192bb66c3c93571852c28d4b5c.jpg"
+    },
+    {
+        "slug": "alan-wakes-american-nightmare",
+        "title": "Alan Wake's American Nightmare",
+        "text": "Дата релиза: 22.2.2012\nMetacritic: 73\nПлатформы: PC, Xbox One, Xbox 360\nМагазины: Steam, Xbox Store, GOG, Xbox 360 Store, Epic Games\n",
+        "image_url": "https://media.rawg.io/media/games/0b3/0b34647c42271600399b93d19b10f1aa.jpg"
+    },
+    {
+        "slug": "alan-wake-remastered",
+        "title": "Alan Wake Remastered",
+        "text": "Дата релиза: 5.10.2021\nПлатформы: PC, PlayStation 5, Xbox One, PlayStation 4, Xbox Series S/X, Nintendo Switch\nМагазины: PlayStation Store, Xbox Store, Nintendo Store, Epic Games\n",
+        "image_url": "https://media.rawg.io/media/games/685/685812b147f42b08e94391defa972898.jpg"
+    },
+    {
+        "slug": "alan-wake-2",
+        "title": "Alan Wake 2",
+        "text": "Дата релиза: 27.10.2023\nПлатформы: PC, PlayStation 5, Xbox Series S/X\nМагазины: PlayStation Store, Epic Games\n",
+        "image_url": "https://media.rawg.io/media/games/5b9/5b963d7633cd640fa2dbc4069d1c6377.jpg"
+    },
+    {
+        "slug": "tridents-wake",
+        "title": "Trident's Wake",
+        "text": "Платформы: PC\nМагазины: Steam\n",
+        "image_url": "https://media.rawg.io/media/screenshots/939/9398ec4249c4a9854e888fb52ae67cae.jpg"
+    },
+    {
+        "slug": "dragons-wake",
+        "title": "Dragon's Wake",
+        "text": "Дата релиза: 10.12.2015\nПлатформы: PC, macOS, Linux\nМагазины: Steam\n",
+        "image_url": "https://media.rawg.io/media/screenshots/e3b/e3b207dbe04a005beb8d9733b234bf69.jpg"
+    },
+    {
+        "slug": "escape-plan-ps4",
+        "title": "Escape Plan",
+        "text": "Дата релиза: 3.12.2013\nПлатформы: PlayStation 4, PS Vita\nМагазины: PlayStation Store\n",
+        "image_url": "https://media.rawg.io/media/games/183/183bd193be11348ef8467569dd90a383.jpg"
+    },
+    {
+        "slug": "balan-wonderworld",
+        "title": "Balan Wonderworld",
+        "text": "Дата релиза: 26.3.2021\nMetacritic: 43\nПлатформы: PC, PlayStation 5, Xbox One, PlayStation 4, Xbox Series S/X, Nintendo Switch\nМагазины: Steam, PlayStation Store, Xbox Store, Nintendo Store\n",
+        "image_url": "https://media.rawg.io/media/games/f17/f17cb19c5e9b30e378e5f9ba1cc74df3.jpg"
+    }
+]
